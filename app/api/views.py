@@ -1,7 +1,9 @@
 from rest_framework import generics
 from django.contrib.auth.models import User
-from .serializers import ProductSerializer, UserSerializer, CampaignSerializer, TagSerializer
-from ..models import Product, User, Campaign, Tag
+from .serializers import ProductSerializer, UserSerializer, CampaignSerializer, DonationSerializer, TagSerializer
+from ..models import Product, User, Campaign, Donation, Tag
+from rest_framework import permissions
+from .permissions import IsOwner
 
 
 class CreateProductView(generics.ListCreateAPIView):
@@ -32,6 +34,17 @@ class CreateCampaignView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         """Save the post data when creating a new campaign."""
+        serializer.save(user=self.request.user)
+
+
+class CreateDonationView(generics.ListCreateAPIView):
+    """This class defines the create behavior of our rest api."""
+    queryset = Donation.objects.all()
+    serializer_class = DonationSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwner)  # This lets read without authentication
+
+    def perform_create(self, serializer):
+        """Save the post data when creating a new bucketlist."""
         serializer.save(user=self.request.user)
 
 
