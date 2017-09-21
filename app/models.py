@@ -2,7 +2,6 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from django.template.defaultfilters import slugify
-import datetime
 
 # Create your models here.
 
@@ -14,11 +13,8 @@ class Campaign(models.Model):
     tag = models.ManyToManyField('Tag')
     title = models.CharField(max_length=200)
     description = models.TextField()
-    created_date = models.DateTimeField(default=timezone.now)
-    end_date = models.DateTimeField(blank=False, null=False)
-
-    def ending(self):
-        self.end_date = (timezone.now() + datetime.timedelta(30)).isoformat()
+    created_date = models.DateField(default=timezone.now)
+    end_date = models.DateField(blank=False, null=False)
 
     def __str__(self):
         return self.title
@@ -34,7 +30,7 @@ class Product(models.Model):
     auto_increment_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=30)
     description = models.TextField()
-    created_date = models.DateTimeField(default=timezone.now)
+    created_date = models.DateField(default=timezone.now)
     price = models.DecimalField(max_digits=6, decimal_places=2)
 
     def __str__(self):
@@ -45,7 +41,7 @@ class Donation(models.Model):
     auto_increment_id = models.AutoField(primary_key=True)
     campaign = models.ForeignKey('Campaign')
     user = models.ForeignKey('app.User', related_name='donations', on_delete=models.CASCADE)
-    created_date = models.DateTimeField(default=timezone.now)
+    created_date = models.DateField(default=timezone.now)
     price = models.DecimalField(max_digits=6, decimal_places=2)
 
     def __str__(self):
