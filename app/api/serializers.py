@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    """Serializer to map the Model instance into JSON format."""
+    """Serializer to map the Product Model instance into JSON format."""
 
     class Meta:
         """Meta class to map serializer's fields with the model fields."""
@@ -16,17 +16,27 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    """Serializer to map the Model instance into JSON format."""
+    """Serializer to map the User Model instance into JSON format."""
+
+    def create(self, validated_data):
+        user = User(
+            email=validated_data['email'],
+            username=validated_data['username'],
+            name=validated_data['name']
+        )
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
 
     class Meta:
         """Meta class to map serializer's fields with the model fields."""
         model = User
         fields = ('pk', 'name', 'location', 'username', 'password', 'email')
-        # read_only_fields = ('auto_increment_id')
+        extra_kwargs = {'password': {'write_only': True}}
 
 
 class CampaignSerializer(serializers.ModelSerializer):
-    """Serializer to map the Model instance into JSON format."""
+    """Serializer to map the Campaign Model instance into JSON format."""
 
     user = serializers.ReadOnlyField(source='user.pk')
 
@@ -48,18 +58,19 @@ class CampaignSerializer(serializers.ModelSerializer):
 
 
 class DonationSerializer(serializers.ModelSerializer):
-    """Serializer to map the Model instance into JSON format."""
+    """Serializer to map the Donation Model instance into JSON format."""
     user = serializers.ReadOnlyField(source='user.pk')
+    auto_increment_id = serializers.ReadOnlyField(source='user.auto_increment_id')
 
     class Meta:
         """Meta class to map serializer's fields with the model fields."""
         model = Donation
-        fields = ('auto_increment_id', 'user', 'campaign', 'price')
+        fields = ('auto_increment_id', 'user', 'price')
         # read_only_fields = ('auto_increment_id')
 
 
 class TagSerializer(serializers.ModelSerializer):
-    """Serializer to map the Model instance into JSON format."""
+    """Serializer to map the Tag Model instance into JSON format."""
 
     class Meta:
         """Meta class to map serializer's fields with the model fields."""
